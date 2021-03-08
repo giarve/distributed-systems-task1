@@ -46,8 +46,9 @@ def list():
     return _server_stub_singleton.listWorkers(server_pb2_grpc.google_dot_protobuf_dot_empty__pb2.Empty())
 
 @worker.command()
-def delete(workerId):
-    return _server_stub_singleton.delete(server_pb2.WorkerId(id=workerId))
+@click.argument('wkid')
+def delete(wkid):
+    return _server_stub_singleton.delete(server_pb2.WorkerId(id=int(wkid)))
 
 @click.group()
 def job():

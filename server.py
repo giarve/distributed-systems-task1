@@ -18,20 +18,25 @@ import worker as wk
 
 _LOGGER = logging.getLogger(__name__)
 
-_ONE_DAY = datetime.timedelta(days=1)
 _PROCESS_COUNT = multiprocessing.cpu_count()
 
-_WORKERS = []
+_WORKER_ID = 0
+_WORKERS = {}
 
 _BIND_ADDRESS = 'localhost:12312'
 
 class WorkerManagement(server_pb2_grpc.WorkerManagementServicer):
 
     def create(self, request, context):  
+        global _WORKER_ID
+        global _WORKERS
+        
         worker = multiprocessing.Process(target=wk.worker_init)
         worker.start()
-        _WORKERS.append(worker)
+        # _WORKERS.append(worker)
+        _WORKERS[_WORKER_ID] = worker
         _LOGGER.info('Creating a worker %s', worker)
+        _WORKER_ID += 1
 
         return server_pb2.Status(ok=True)
 
@@ -40,7 +45,14 @@ class WorkerManagement(server_pb2_grpc.WorkerManagementServicer):
         # return _WORKERS
 
     def delete(self, request, context):
-        return server_pb2.Status(ok=True)
+        global _WORKERS
+        
+        if _WORKERS[request.id] is not None:
+            _LOGGER.info('Terminating the worker %s', request.id)
+            _WORKERS[request.id].terminate()
+            _WORKERS[request.id] = None
+            return server_pb2.Status(ok=True)
+        return server_pb2.Status(ok=False)
 
     def job(self, request, context):
         print(request)
