@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package server;
+
+import "google/protobuf/empty.proto";
+
+message Status {
+    bool ok = 1;
+}
+
+message WorkerId {
+    uint32 id = 1;
+}
+
+message WorkerList {
+    // google.protobuf.ListValue workers = 1;
+    repeated uint32 id = 1;
+}
+
+message WorkType {
+    string programName = 1; // run-wordcount, run-countwords
+    repeated string urls = 2;
+    // google.protobuf.ListValue urls = 2;
+}
+
+message JobId {
+    uint32 id = 1;
+}
+
+// Worker service
+service WorkerManagement {
+    rpc create (google.protobuf.Empty) returns (Status) {}
+    rpc listWorkers (google.protobuf.Empty) returns (WorkerList) {}
+    rpc delete (WorkerId) returns (Status) {}
+    rpc job (WorkType) returns (JobId) {}
+}
+
