@@ -29,11 +29,9 @@ class WorkerManagement(server_pb2_grpc.WorkerManagementServicer):
 
     def create(self, request, context):  
         global _WORKER_ID
-        global _WORKERS
         
         worker = multiprocessing.Process(target=wk.worker_init)
         worker.start()
-        # _WORKERS.append(worker)
         _WORKERS[_WORKER_ID] = worker
         _LOGGER.info('Creating a worker %s', worker)
         _WORKER_ID += 1
@@ -41,18 +39,16 @@ class WorkerManagement(server_pb2_grpc.WorkerManagementServicer):
         return server_pb2.Status(ok=True)
 
     def listWorkers(self, request, context):
-        return server_pb2.WorkerList(id=[])
-        # return _WORKERS
+        return server_pb2.WorkerList(id=_WORKERS.keys())
 
     def delete(self, request, context):
-        global _WORKERS
-        
-        if _WORKERS[request.id] is not None:
-            _LOGGER.info('Terminating the worker %s', request.id)
-            _WORKERS[request.id].terminate()
-            _WORKERS[request.id] = None
-            return server_pb2.Status(ok=True)
-        return server_pb2.Status(ok=False)
+        worker = _WORKERS.pop(request.id, None)
+        if worker is None:
+            return server_pb2.Status(ok=False)
+
+        _LOGGER.info('Terminating the worker %s', request.id)
+        worker.terminate()
+        return server_pb2.Status(ok=True)
 
     def job(self, request, context):
         print(request)

@@ -4,6 +4,7 @@ import atexit
 import logging
 import sys
 
+from google.protobuf import empty_pb2
 import grpc
 
 import click
@@ -20,8 +21,7 @@ _LOGGER = logging.getLogger(__name__)
 def _shutdown_worker():
     _LOGGER.info('Shutting worker process down.')
     if _server_channel_singleton is not None:
-        pass
-        #_server_channel_singleton.stop()
+        _server_channel_singleton.close()
 
 
 def _initialize_server_conn(server_address):
@@ -39,16 +39,16 @@ def worker():
 
 @worker.command()
 def create():
-    return _server_stub_singleton.create(server_pb2_grpc.google_dot_protobuf_dot_empty__pb2.Empty())
+    return _server_stub_singleton.create(empty_pb2.Empty()).ok
 
 @worker.command()
 def list():
-    return _server_stub_singleton.listWorkers(server_pb2_grpc.google_dot_protobuf_dot_empty__pb2.Empty())
+    return _server_stub_singleton.listWorkers(empty_pb2.Empty()).id
 
 @worker.command()
-@click.argument('wkid')
-def delete(wkid):
-    return _server_stub_singleton.delete(server_pb2.WorkerId(id=int(wkid)))
+@click.argument('workerid', type=int)
+def delete(workerid):
+    return _server_stub_singleton.delete(server_pb2.WorkerId(id=workerid)).ok
 
 @click.group()
 def job():
@@ -72,7 +72,8 @@ def main():
     #print(create_worker())
     cli.add_command(worker)
     cli.add_command(job)
-    cli()
+    server_retval = cli(standalone_mode=False)
+    print("Server says: {}".format(str(server_retval)))
     # print(add_job_to_queue(programName="wordcount", urls=["url1", "url2"]))
 
 
