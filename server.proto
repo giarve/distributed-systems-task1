@@ -18,13 +18,16 @@ message WorkerList {
 }
 
 message WorkType {
-    string programName = 1; // run-wordcount, run-countwords
+    enum Program {
+        WORDCOUNT = 0;
+        COUNTWORDS = 1;
+    }
+    Program program = 1; // run-wordcount, run-countwords
     repeated string urls = 2;
-    // google.protobuf.ListValue urls = 2;
 }
 
 message JobId {
-    uint32 id = 1;
+    string id = 1;
 }
 
 // Worker service

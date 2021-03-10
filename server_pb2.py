@@ -20,11 +20,36 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x0cserver.proto\x12\x06server\x1a\x1bgoogle/protobuf/empty.proto\"\x14\n\x06Status\x12\n\n\x02ok\x18\x01 \x01(\x08\"\x16\n\x08WorkerId\x12\n\n\x02id\x18\x01 \x01(\r\"\x18\n\nWorkerList\x12\n\n\x02id\x18\x01 \x03(\r\"-\n\x08WorkType\x12\x13\n\x0bprogramName\x18\x01 \x01(\t\x12\x0c\n\x04urls\x18\x02 \x03(\t\"\x13\n\x05JobId\x12\n\n\x02id\x18\x01 \x01(\r2\xdb\x01\n\x10WorkerManagement\x12\x32\n\x06\x63reate\x12\x16.google.protobuf.Empty\x1a\x0e.server.Status\"\x00\x12;\n\x0blistWorkers\x12\x16.google.protobuf.Empty\x1a\x12.server.WorkerList\"\x00\x12,\n\x06\x64\x65lete\x12\x10.server.WorkerId\x1a\x0e.server.Status\"\x00\x12(\n\x03job\x12\x10.server.WorkType\x1a\r.server.JobId\"\x00\x62\x06proto3'
+  serialized_pb=b'\n\x0cserver.proto\x12\x06server\x1a\x1bgoogle/protobuf/empty.proto\"\x14\n\x06Status\x12\n\n\x02ok\x18\x01 \x01(\x08\"\x16\n\x08WorkerId\x12\n\n\x02id\x18\x01 \x01(\r\"\x18\n\nWorkerList\x12\n\n\x02id\x18\x01 \x03(\r\"m\n\x08WorkType\x12)\n\x07program\x18\x01 \x01(\x0e\x32\x18.server.WorkType.Program\x12\x0c\n\x04urls\x18\x02 \x03(\t\"(\n\x07Program\x12\r\n\tWORDCOUNT\x10\x00\x12\x0e\n\nCOUNTWORDS\x10\x01\"\x13\n\x05JobId\x12\n\n\x02id\x18\x01 \x01(\t2\xdb\x01\n\x10WorkerManagement\x12\x32\n\x06\x63reate\x12\x16.google.protobuf.Empty\x1a\x0e.server.Status\"\x00\x12;\n\x0blistWorkers\x12\x16.google.protobuf.Empty\x1a\x12.server.WorkerList\"\x00\x12,\n\x06\x64\x65lete\x12\x10.server.WorkerId\x1a\x0e.server.Status\"\x00\x12(\n\x03job\x12\x10.server.WorkType\x1a\r.server.JobId\"\x00\x62\x06proto3'
   ,
   dependencies=[google_dot_protobuf_dot_empty__pb2.DESCRIPTOR,])
 
 
+
+_WORKTYPE_PROGRAM = _descriptor.EnumDescriptor(
+  name='Program',
+  full_name='server.WorkType.Program',
+  filename=None,
+  file=DESCRIPTOR,
+  create_key=_descriptor._internal_create_key,
+  values=[
+    _descriptor.EnumValueDescriptor(
+      name='WORDCOUNT', index=0, number=0,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+    _descriptor.EnumValueDescriptor(
+      name='COUNTWORDS', index=1, number=1,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+  ],
+  containing_type=None,
+  serialized_options=None,
+  serialized_start=194,
+  serialized_end=234,
+)
+_sym_db.RegisterEnumDescriptor(_WORKTYPE_PROGRAM)
 
 
 _STATUS = _descriptor.Descriptor(
@@ -132,9 +157,9 @@ _WORKTYPE = _descriptor.Descriptor(
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='programName', full_name='server.WorkType.programName', index=0,
-      number=1, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
+      name='program', full_name='server.WorkType.program', index=0,
+      number=1, type=14, cpp_type=8, label=1,
+      has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
@@ -150,6 +175,7 @@ _WORKTYPE = _descriptor.Descriptor(
   ],
   nested_types=[],
   enum_types=[
+    _WORKTYPE_PROGRAM,
   ],
   serialized_options=None,
   is_extendable=False,
@@ -158,7 +184,7 @@ _WORKTYPE = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=125,
-  serialized_end=170,
+  serialized_end=234,
 )
 
 
@@ -172,8 +198,8 @@ _JOBID = _descriptor.Descriptor(
   fields=[
     _descriptor.FieldDescriptor(
       name='id', full_name='server.JobId.id', index=0,
-      number=1, type=13, cpp_type=3, label=1,
-      has_default_value=False, default_value=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
@@ -189,10 +215,12 @@ _JOBID = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=172,
-  serialized_end=191,
+  serialized_start=236,
+  serialized_end=255,
 )
 
+_WORKTYPE.fields_by_name['program'].enum_type = _WORKTYPE_PROGRAM
+_WORKTYPE_PROGRAM.containing_type = _WORKTYPE
 DESCRIPTOR.message_types_by_name['Status'] = _STATUS
 DESCRIPTOR.message_types_by_name['WorkerId'] = _WORKERID
 DESCRIPTOR.message_types_by_name['WorkerList'] = _WORKERLIST
@@ -244,8 +272,8 @@ _WORKERMANAGEMENT = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=194,
-  serialized_end=413,
+  serialized_start=258,
+  serialized_end=477,
   methods=[
   _descriptor.MethodDescriptor(
     name='create',
