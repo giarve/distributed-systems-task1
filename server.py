@@ -57,7 +57,7 @@ class WorkerManagement(server_pb2_grpc.WorkerManagementServicer):
 
         return server_pb2.Status(ok=True)
 
-    def listWorkers(self, request, context):
+    def list(self, request, context):
         return server_pb2.WorkerList(id=_WORKERS.keys())
 
     def delete(self, request, context):

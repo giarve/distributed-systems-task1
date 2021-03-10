@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x0cserver.proto\x12\x06server\x1a\x1bgoogle/protobuf/empty.proto\"\x14\n\x06Status\x12\n\n\x02ok\x18\x01 \x01(\x08\"\x16\n\x08WorkerId\x12\n\n\x02id\x18\x01 \x01(\r\"\x18\n\nWorkerList\x12\n\n\x02id\x18\x01 \x03(\r\"m\n\x08WorkType\x12)\n\x07program\x18\x01 \x01(\x0e\x32\x18.server.WorkType.Program\x12\x0c\n\x04urls\x18\x02 \x03(\t\"(\n\x07Program\x12\r\n\tWORDCOUNT\x10\x00\x12\x0e\n\nCOUNTWORDS\x10\x01\"\x13\n\x05JobId\x12\n\n\x02id\x18\x01 \x01(\t2\xdb\x01\n\x10WorkerManagement\x12\x32\n\x06\x63reate\x12\x16.google.protobuf.Empty\x1a\x0e.server.Status\"\x00\x12;\n\x0blistWorkers\x12\x16.google.protobuf.Empty\x1a\x12.server.WorkerList\"\x00\x12,\n\x06\x64\x65lete\x12\x10.server.WorkerId\x1a\x0e.server.Status\"\x00\x12(\n\x03job\x12\x10.server.WorkType\x1a\r.server.JobId\"\x00\x62\x06proto3'
+  serialized_pb=b'\n\x0cserver.proto\x12\x06server\x1a\x1bgoogle/protobuf/empty.proto\"\x14\n\x06Status\x12\n\n\x02ok\x18\x01 \x01(\x08\"\x16\n\x08WorkerId\x12\n\n\x02id\x18\x01 \x01(\r\"\x18\n\nWorkerList\x12\n\n\x02id\x18\x01 \x03(\r\"m\n\x08WorkType\x12)\n\x07program\x18\x01 \x01(\x0e\x32\x18.server.WorkType.Program\x12\x0c\n\x04urls\x18\x02 \x03(\t\"(\n\x07Program\x12\r\n\tWORDCOUNT\x10\x00\x12\x0e\n\nCOUNTWORDS\x10\x01\"\x13\n\x05JobId\x12\n\n\x02id\x18\x01 \x01(\t2\xd4\x01\n\x10WorkerManagement\x12\x32\n\x06\x63reate\x12\x16.google.protobuf.Empty\x1a\x0e.server.Status\"\x00\x12\x34\n\x04list\x12\x16.google.protobuf.Empty\x1a\x12.server.WorkerList\"\x00\x12,\n\x06\x64\x65lete\x12\x10.server.WorkerId\x1a\x0e.server.Status\"\x00\x12(\n\x03job\x12\x10.server.WorkType\x1a\r.server.JobId\"\x00\x62\x06proto3'
   ,
   dependencies=[google_dot_protobuf_dot_empty__pb2.DESCRIPTOR,])
 
@@ -273,7 +273,7 @@ _WORKERMANAGEMENT = _descriptor.ServiceDescriptor(
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
   serialized_start=258,
-  serialized_end=477,
+  serialized_end=470,
   methods=[
   _descriptor.MethodDescriptor(
     name='create',
@@ -286,8 +286,8 @@ _WORKERMANAGEMENT = _descriptor.ServiceDescriptor(
     create_key=_descriptor._internal_create_key,
   ),
   _descriptor.MethodDescriptor(
-    name='listWorkers',
-    full_name='server.WorkerManagement.listWorkers',
+    name='list',
+    full_name='server.WorkerManagement.list',
     index=1,
     containing_service=None,
     input_type=google_dot_protobuf_dot_empty__pb2._EMPTY,

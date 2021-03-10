@@ -21,8 +21,8 @@ class WorkerManagementStub(object):
                 request_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
                 response_deserializer=server__pb2.Status.FromString,
                 )
-        self.listWorkers = channel.unary_unary(
-                '/server.WorkerManagement/listWorkers',
+        self.list = channel.unary_unary(
+                '/server.WorkerManagement/list',
                 request_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
                 response_deserializer=server__pb2.WorkerList.FromString,
                 )
@@ -48,7 +48,7 @@ class WorkerManagementServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def listWorkers(self, request, context):
+    def list(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -74,8 +74,8 @@ def add_WorkerManagementServicer_to_server(servicer, server):
                     request_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
                     response_serializer=server__pb2.Status.SerializeToString,
             ),
-            'listWorkers': grpc.unary_unary_rpc_method_handler(
-                    servicer.listWorkers,
+            'list': grpc.unary_unary_rpc_method_handler(
+                    servicer.list,
                     request_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
                     response_serializer=server__pb2.WorkerList.SerializeToString,
             ),
@@ -118,7 +118,7 @@ class WorkerManagement(object):
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
-    def listWorkers(request,
+    def list(request,
             target,
             options=(),
             channel_credentials=None,
@@ -128,7 +128,7 @@ class WorkerManagement(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/server.WorkerManagement/listWorkers',
+        return grpc.experimental.unary_unary(request, target, '/server.WorkerManagement/list',
             google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
             server__pb2.WorkerList.FromString,
             options, channel_credentials,

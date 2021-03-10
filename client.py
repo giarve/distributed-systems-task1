@@ -41,7 +41,7 @@ def create():
 
 @worker.command()
 def list():
-    return _server_stub_singleton.listWorkers(empty_pb2.Empty()).id
+    return _server_stub_singleton.list(empty_pb2.Empty()).id
 
 @worker.command()
 @click.argument('workerid', type=int)
