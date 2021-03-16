@@ -31,11 +31,6 @@ class WorkerManagementStub(object):
                 request_serializer=server__pb2.WorkerId.SerializeToString,
                 response_deserializer=server__pb2.Status.FromString,
                 )
-        self.job = channel.unary_unary(
-                '/server.WorkerManagement/job',
-                request_serializer=server__pb2.WorkType.SerializeToString,
-                response_deserializer=server__pb2.JobId.FromString,
-                )
 
 
 class WorkerManagementServicer(object):
@@ -60,12 +55,6 @@ class WorkerManagementServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def job(self, request, context):
-        """Missing associated documentation comment in .proto file."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
 
 def add_WorkerManagementServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -83,11 +72,6 @@ def add_WorkerManagementServicer_to_server(servicer, server):
                     servicer.delete,
                     request_deserializer=server__pb2.WorkerId.FromString,
                     response_serializer=server__pb2.Status.SerializeToString,
-            ),
-            'job': grpc.unary_unary_rpc_method_handler(
-                    servicer.job,
-                    request_deserializer=server__pb2.WorkType.FromString,
-                    response_serializer=server__pb2.JobId.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -151,8 +135,68 @@ class WorkerManagement(object):
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
+
+class JobManagementStub(object):
+    """Missing associated documentation comment in .proto file."""
+
+    def __init__(self, channel):
+        """Constructor.
+
+        Args:
+            channel: A grpc.Channel.
+        """
+        self.create = channel.unary_unary(
+                '/server.JobManagement/create',
+                request_serializer=server__pb2.WorkType.SerializeToString,
+                response_deserializer=server__pb2.JobId.FromString,
+                )
+        self.list = channel.unary_unary(
+                '/server.JobManagement/list',
+                request_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
+                response_deserializer=server__pb2.JobList.FromString,
+                )
+
+
+class JobManagementServicer(object):
+    """Missing associated documentation comment in .proto file."""
+
+    def create(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def list(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+
+def add_JobManagementServicer_to_server(servicer, server):
+    rpc_method_handlers = {
+            'create': grpc.unary_unary_rpc_method_handler(
+                    servicer.create,
+                    request_deserializer=server__pb2.WorkType.FromString,
+                    response_serializer=server__pb2.JobId.SerializeToString,
+            ),
+            'list': grpc.unary_unary_rpc_method_handler(
+                    servicer.list,
+                    request_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
+                    response_serializer=server__pb2.JobList.SerializeToString,
+            ),
+    }
+    generic_handler = grpc.method_handlers_generic_handler(
+            'server.JobManagement', rpc_method_handlers)
+    server.add_generic_rpc_handlers((generic_handler,))
+
+
+ # This class is part of an EXPERIMENTAL API.
+class JobManagement(object):
+    """Missing associated documentation comment in .proto file."""
+
     @staticmethod
-    def job(request,
+    def create(request,
             target,
             options=(),
             channel_credentials=None,
@@ -162,8 +206,25 @@ class WorkerManagement(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/server.WorkerManagement/job',
+        return grpc.experimental.unary_unary(request, target, '/server.JobManagement/create',
             server__pb2.WorkType.SerializeToString,
             server__pb2.JobId.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def list(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/server.JobManagement/list',
+            google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
+            server__pb2.JobList.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

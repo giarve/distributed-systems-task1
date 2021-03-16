@@ -3,6 +3,7 @@ syntax = "proto3";
 package server;
 
 import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
 
 message Status {
     bool ok = 1;
@@ -12,8 +13,14 @@ message WorkerId {
     uint32 id = 1;
 }
 
+message WorkerInfo {
+    uint32 id = 1;
+    string current_state = 2;
+    string current_job = 3;
+}
+
 message WorkerList {
-    repeated uint32 id = 1;
+    repeated WorkerInfo workers = 1;
 }
 
 message WorkType {
@@ -21,7 +28,6 @@ message WorkType {
     bytes reduce_function_pickled = 2;
     repeated string args = 3;
 }
-
 
 message JobId {
     string id = 1;
@@ -31,11 +37,24 @@ message NumberOfWorkers {
     uint32 num = 1;
 }
 
+message JobDetails {
+    string id = 1;
+    string result = 2;
+    google.protobuf.Timestamp ended_at = 3;
+}
+
+message JobList {
+    repeated JobDetails jobs = 1;
+}
+
 // Worker service
 service WorkerManagement {
     rpc create (NumberOfWorkers) returns (Status) {}
     rpc list (google.protobuf.Empty) returns (WorkerList) {}
     rpc delete (WorkerId) returns (Status) {}
-    rpc job (WorkType) returns (JobId) {}
 }
 
+service JobManagement {
+    rpc create (WorkType) returns (JobId) {}
+    rpc list (google.protobuf.Empty) returns (JobList) {}
+}

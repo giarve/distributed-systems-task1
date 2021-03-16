@@ -16,20 +16,31 @@
                   <tr>
                     <th scope="col">Worker id</th>
                     <th scope="col">Status</th>
+                    <th scope="col">Action</th>
                   </tr>
                 </thead>
                 <tbody>
                     {% for k, v in workers.items() %}
                     <tr>
-                        <th scope="row">{{ k }}</th>
-                        <td>{{ v }}</td>
+                        <th scope="row" class="align-middle">{{ k }}</th>
+                        <td class="align-middle">{{ v }}</td>
+                        <td class="align-middle"><a href="/worker/delete/{{ k }}" role="button" class="btn btn-outline-danger">Delete</button></td>
                     </tr>
                     {% endfor %}
                 </tbody>
               </table>
-            <a href="/upload" class="btn btn-primary btn-lg" role="button">Upload new job</a>
+            <a href="/worker/create" class="btn btn-primary btn-lg" role="button">Create worker</a>
 
-            
+
+            <div>
+                <form method=post enctype=multipart/form-data></form>
+                    <label for="formFileLg" class="form-label">Upload new job</label>
+                    <input name=file class="form-control form-control-lg" id="formFileLg" type="file">
+                    <input type="text" class="form-control" id="arg" placeholder="Arguments">
+                    <input type=submit value=Upload>
+                </form>
+            </div>
+    
         </main>
     </div>
     

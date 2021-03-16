@@ -17,6 +17,17 @@ worker_info = {
 def index():
     return render_template('index.html', workers=worker_info)
 
+@app.route('/worker/create/<int:numWorkers>', methods=['POST'])
+def createWorker(numWorkers):
+    return "hola"
+    #return createWorker(numWorkers)
+
+@app.route('/worker/delete/<int:workerId>' ,methods=['GET'])
+def deleteWorker(workerId):
+    CLICK_CONTEXT.invoke(CLIENT.delete, workerid=workerId)
+    return "asd"
+    # return delete_rpc(workerId)
+
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_UPLOAD_EXTENSIONS

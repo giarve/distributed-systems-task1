@@ -12,6 +12,7 @@ _sym_db = _symbol_database.Default()
 
 
 from google.protobuf import empty_pb2 as google_dot_protobuf_dot_empty__pb2
+from google.protobuf import timestamp_pb2 as google_dot_protobuf_dot_timestamp__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
@@ -20,9 +21,9 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x0cserver.proto\x12\x06server\x1a\x1bgoogle/protobuf/empty.proto\"\x14\n\x06Status\x12\n\n\x02ok\x18\x01 \x01(\x08\"\x16\n\x08WorkerId\x12\n\n\x02id\x18\x01 \x01(\r\"\x18\n\nWorkerList\x12\n\n\x02id\x18\x01 \x03(\r\"W\n\x08WorkType\x12\x1c\n\x14map_function_pickled\x18\x01 \x01(\x0c\x12\x1f\n\x17reduce_function_pickled\x18\x02 \x01(\x0c\x12\x0c\n\x04\x61rgs\x18\x03 \x03(\t\"\x13\n\x05JobId\x12\n\n\x02id\x18\x01 \x01(\t\"\x1e\n\x0fNumberOfWorkers\x12\x0b\n\x03num\x18\x01 \x01(\r2\xd5\x01\n\x10WorkerManagement\x12\x33\n\x06\x63reate\x12\x17.server.NumberOfWorkers\x1a\x0e.server.Status\"\x00\x12\x34\n\x04list\x12\x16.google.protobuf.Empty\x1a\x12.server.WorkerList\"\x00\x12,\n\x06\x64\x65lete\x12\x10.server.WorkerId\x1a\x0e.server.Status\"\x00\x12(\n\x03job\x12\x10.server.WorkType\x1a\r.server.JobId\"\x00\x62\x06proto3'
+  serialized_pb=b'\n\x0cserver.proto\x12\x06server\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x14\n\x06Status\x12\n\n\x02ok\x18\x01 \x01(\x08\"\x16\n\x08WorkerId\x12\n\n\x02id\x18\x01 \x01(\r\"D\n\nWorkerInfo\x12\n\n\x02id\x18\x01 \x01(\r\x12\x15\n\rcurrent_state\x18\x02 \x01(\t\x12\x13\n\x0b\x63urrent_job\x18\x03 \x01(\t\"1\n\nWorkerList\x12#\n\x07workers\x18\x01 \x03(\x0b\x32\x12.server.WorkerInfo\"W\n\x08WorkType\x12\x1c\n\x14map_function_pickled\x18\x01 \x01(\x0c\x12\x1f\n\x17reduce_function_pickled\x18\x02 \x01(\x0c\x12\x0c\n\x04\x61rgs\x18\x03 \x03(\t\"\x13\n\x05JobId\x12\n\n\x02id\x18\x01 \x01(\t\"\x1e\n\x0fNumberOfWorkers\x12\x0b\n\x03num\x18\x01 \x01(\r\"V\n\nJobDetails\x12\n\n\x02id\x18\x01 \x01(\t\x12\x0e\n\x06result\x18\x02 \x01(\t\x12,\n\x08\x65nded_at\x18\x03 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\"+\n\x07JobList\x12 \n\x04jobs\x18\x01 \x03(\x0b\x32\x12.server.JobDetails2\xab\x01\n\x10WorkerManagement\x12\x33\n\x06\x63reate\x12\x17.server.NumberOfWorkers\x1a\x0e.server.Status\"\x00\x12\x34\n\x04list\x12\x16.google.protobuf.Empty\x1a\x12.server.WorkerList\"\x00\x12,\n\x06\x64\x65lete\x12\x10.server.WorkerId\x1a\x0e.server.Status\"\x00\x32o\n\rJobManagement\x12+\n\x06\x63reate\x12\x10.server.WorkType\x1a\r.server.JobId\"\x00\x12\x31\n\x04list\x12\x16.google.protobuf.Empty\x1a\x0f.server.JobList\"\x00\x62\x06proto3'
   ,
-  dependencies=[google_dot_protobuf_dot_empty__pb2.DESCRIPTOR,])
+  dependencies=[google_dot_protobuf_dot_empty__pb2.DESCRIPTOR,google_dot_protobuf_dot_timestamp__pb2.DESCRIPTOR,])
 
 
 
@@ -54,8 +55,8 @@ _STATUS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=53,
-  serialized_end=73,
+  serialized_start=86,
+  serialized_end=106,
 )
 
 
@@ -86,8 +87,54 @@ _WORKERID = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=75,
-  serialized_end=97,
+  serialized_start=108,
+  serialized_end=130,
+)
+
+
+_WORKERINFO = _descriptor.Descriptor(
+  name='WorkerInfo',
+  full_name='server.WorkerInfo',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='id', full_name='server.WorkerInfo.id', index=0,
+      number=1, type=13, cpp_type=3, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='current_state', full_name='server.WorkerInfo.current_state', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='current_job', full_name='server.WorkerInfo.current_job', index=2,
+      number=3, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=132,
+  serialized_end=200,
 )
 
 
@@ -100,8 +147,8 @@ _WORKERLIST = _descriptor.Descriptor(
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='id', full_name='server.WorkerList.id', index=0,
-      number=1, type=13, cpp_type=3, label=3,
+      name='workers', full_name='server.WorkerList.workers', index=0,
+      number=1, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -118,8 +165,8 @@ _WORKERLIST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=99,
-  serialized_end=123,
+  serialized_start=202,
+  serialized_end=251,
 )
 
 
@@ -164,8 +211,8 @@ _WORKTYPE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=125,
-  serialized_end=212,
+  serialized_start=253,
+  serialized_end=340,
 )
 
 
@@ -196,8 +243,8 @@ _JOBID = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=214,
-  serialized_end=233,
+  serialized_start=342,
+  serialized_end=361,
 )
 
 
@@ -228,16 +275,100 @@ _NUMBEROFWORKERS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=235,
-  serialized_end=265,
+  serialized_start=363,
+  serialized_end=393,
 )
 
+
+_JOBDETAILS = _descriptor.Descriptor(
+  name='JobDetails',
+  full_name='server.JobDetails',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='id', full_name='server.JobDetails.id', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='result', full_name='server.JobDetails.result', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='ended_at', full_name='server.JobDetails.ended_at', index=2,
+      number=3, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=395,
+  serialized_end=481,
+)
+
+
+_JOBLIST = _descriptor.Descriptor(
+  name='JobList',
+  full_name='server.JobList',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='jobs', full_name='server.JobList.jobs', index=0,
+      number=1, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=483,
+  serialized_end=526,
+)
+
+_WORKERLIST.fields_by_name['workers'].message_type = _WORKERINFO
+_JOBDETAILS.fields_by_name['ended_at'].message_type = google_dot_protobuf_dot_timestamp__pb2._TIMESTAMP
+_JOBLIST.fields_by_name['jobs'].message_type = _JOBDETAILS
 DESCRIPTOR.message_types_by_name['Status'] = _STATUS
 DESCRIPTOR.message_types_by_name['WorkerId'] = _WORKERID
+DESCRIPTOR.message_types_by_name['WorkerInfo'] = _WORKERINFO
 DESCRIPTOR.message_types_by_name['WorkerList'] = _WORKERLIST
 DESCRIPTOR.message_types_by_name['WorkType'] = _WORKTYPE
 DESCRIPTOR.message_types_by_name['JobId'] = _JOBID
 DESCRIPTOR.message_types_by_name['NumberOfWorkers'] = _NUMBEROFWORKERS
+DESCRIPTOR.message_types_by_name['JobDetails'] = _JOBDETAILS
+DESCRIPTOR.message_types_by_name['JobList'] = _JOBLIST
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 Status = _reflection.GeneratedProtocolMessageType('Status', (_message.Message,), {
@@ -253,6 +384,13 @@ WorkerId = _reflection.GeneratedProtocolMessageType('WorkerId', (_message.Messag
   # @@protoc_insertion_point(class_scope:server.WorkerId)
   })
 _sym_db.RegisterMessage(WorkerId)
+
+WorkerInfo = _reflection.GeneratedProtocolMessageType('WorkerInfo', (_message.Message,), {
+  'DESCRIPTOR' : _WORKERINFO,
+  '__module__' : 'server_pb2'
+  # @@protoc_insertion_point(class_scope:server.WorkerInfo)
+  })
+_sym_db.RegisterMessage(WorkerInfo)
 
 WorkerList = _reflection.GeneratedProtocolMessageType('WorkerList', (_message.Message,), {
   'DESCRIPTOR' : _WORKERLIST,
@@ -282,6 +420,20 @@ NumberOfWorkers = _reflection.GeneratedProtocolMessageType('NumberOfWorkers', (_
   })
 _sym_db.RegisterMessage(NumberOfWorkers)
 
+JobDetails = _reflection.GeneratedProtocolMessageType('JobDetails', (_message.Message,), {
+  'DESCRIPTOR' : _JOBDETAILS,
+  '__module__' : 'server_pb2'
+  # @@protoc_insertion_point(class_scope:server.JobDetails)
+  })
+_sym_db.RegisterMessage(JobDetails)
+
+JobList = _reflection.GeneratedProtocolMessageType('JobList', (_message.Message,), {
+  'DESCRIPTOR' : _JOBLIST,
+  '__module__' : 'server_pb2'
+  # @@protoc_insertion_point(class_scope:server.JobList)
+  })
+_sym_db.RegisterMessage(JobList)
+
 
 
 _WORKERMANAGEMENT = _descriptor.ServiceDescriptor(
@@ -291,8 +443,8 @@ _WORKERMANAGEMENT = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=268,
-  serialized_end=481,
+  serialized_start=529,
+  serialized_end=700,
   methods=[
   _descriptor.MethodDescriptor(
     name='create',
@@ -324,19 +476,45 @@ _WORKERMANAGEMENT = _descriptor.ServiceDescriptor(
     serialized_options=None,
     create_key=_descriptor._internal_create_key,
   ),
+])
+_sym_db.RegisterServiceDescriptor(_WORKERMANAGEMENT)
+
+DESCRIPTOR.services_by_name['WorkerManagement'] = _WORKERMANAGEMENT
+
+
+_JOBMANAGEMENT = _descriptor.ServiceDescriptor(
+  name='JobManagement',
+  full_name='server.JobManagement',
+  file=DESCRIPTOR,
+  index=1,
+  serialized_options=None,
+  create_key=_descriptor._internal_create_key,
+  serialized_start=702,
+  serialized_end=813,
+  methods=[
   _descriptor.MethodDescriptor(
-    name='job',
-    full_name='server.WorkerManagement.job',
-    index=3,
+    name='create',
+    full_name='server.JobManagement.create',
+    index=0,
     containing_service=None,
     input_type=_WORKTYPE,
     output_type=_JOBID,
     serialized_options=None,
     create_key=_descriptor._internal_create_key,
   ),
+  _descriptor.MethodDescriptor(
+    name='list',
+    full_name='server.JobManagement.list',
+    index=1,
+    containing_service=None,
+    input_type=google_dot_protobuf_dot_empty__pb2._EMPTY,
+    output_type=_JOBLIST,
+    serialized_options=None,
+    create_key=_descriptor._internal_create_key,
+  ),
 ])
-_sym_db.RegisterServiceDescriptor(_WORKERMANAGEMENT)
+_sym_db.RegisterServiceDescriptor(_JOBMANAGEMENT)
 
-DESCRIPTOR.services_by_name['WorkerManagement'] = _WORKERMANAGEMENT
+DESCRIPTOR.services_by_name['JobManagement'] = _JOBMANAGEMENT
 
 # @@protoc_insertion_point(module_scope)
