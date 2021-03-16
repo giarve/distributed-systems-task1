@@ -20,36 +20,11 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x0cserver.proto\x12\x06server\x1a\x1bgoogle/protobuf/empty.proto\"\x14\n\x06Status\x12\n\n\x02ok\x18\x01 \x01(\x08\"\x16\n\x08WorkerId\x12\n\n\x02id\x18\x01 \x01(\r\"\x18\n\nWorkerList\x12\n\n\x02id\x18\x01 \x03(\r\"m\n\x08WorkType\x12)\n\x07program\x18\x01 \x01(\x0e\x32\x18.server.WorkType.Program\x12\x0c\n\x04urls\x18\x02 \x03(\t\"(\n\x07Program\x12\r\n\tWORDCOUNT\x10\x00\x12\x0e\n\nCOUNTWORDS\x10\x01\"\x13\n\x05JobId\x12\n\n\x02id\x18\x01 \x01(\t2\xd4\x01\n\x10WorkerManagement\x12\x32\n\x06\x63reate\x12\x16.google.protobuf.Empty\x1a\x0e.server.Status\"\x00\x12\x34\n\x04list\x12\x16.google.protobuf.Empty\x1a\x12.server.WorkerList\"\x00\x12,\n\x06\x64\x65lete\x12\x10.server.WorkerId\x1a\x0e.server.Status\"\x00\x12(\n\x03job\x12\x10.server.WorkType\x1a\r.server.JobId\"\x00\x62\x06proto3'
+  serialized_pb=b'\n\x0cserver.proto\x12\x06server\x1a\x1bgoogle/protobuf/empty.proto\"\x14\n\x06Status\x12\n\n\x02ok\x18\x01 \x01(\x08\"\x16\n\x08WorkerId\x12\n\n\x02id\x18\x01 \x01(\r\"\x18\n\nWorkerList\x12\n\n\x02id\x18\x01 \x03(\r\"W\n\x08WorkType\x12\x1c\n\x14map_function_pickled\x18\x01 \x01(\x0c\x12\x1f\n\x17reduce_function_pickled\x18\x02 \x01(\x0c\x12\x0c\n\x04\x61rgs\x18\x03 \x03(\t\"\x13\n\x05JobId\x12\n\n\x02id\x18\x01 \x01(\t\"\x1e\n\x0fNumberOfWorkers\x12\x0b\n\x03num\x18\x01 \x01(\r2\xd5\x01\n\x10WorkerManagement\x12\x33\n\x06\x63reate\x12\x17.server.NumberOfWorkers\x1a\x0e.server.Status\"\x00\x12\x34\n\x04list\x12\x16.google.protobuf.Empty\x1a\x12.server.WorkerList\"\x00\x12,\n\x06\x64\x65lete\x12\x10.server.WorkerId\x1a\x0e.server.Status\"\x00\x12(\n\x03job\x12\x10.server.WorkType\x1a\r.server.JobId\"\x00\x62\x06proto3'
   ,
   dependencies=[google_dot_protobuf_dot_empty__pb2.DESCRIPTOR,])
 
 
-
-_WORKTYPE_PROGRAM = _descriptor.EnumDescriptor(
-  name='Program',
-  full_name='server.WorkType.Program',
-  filename=None,
-  file=DESCRIPTOR,
-  create_key=_descriptor._internal_create_key,
-  values=[
-    _descriptor.EnumValueDescriptor(
-      name='WORDCOUNT', index=0, number=0,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-    _descriptor.EnumValueDescriptor(
-      name='COUNTWORDS', index=1, number=1,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-  ],
-  containing_type=None,
-  serialized_options=None,
-  serialized_start=194,
-  serialized_end=234,
-)
-_sym_db.RegisterEnumDescriptor(_WORKTYPE_PROGRAM)
 
 
 _STATUS = _descriptor.Descriptor(
@@ -157,15 +132,22 @@ _WORKTYPE = _descriptor.Descriptor(
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='program', full_name='server.WorkType.program', index=0,
-      number=1, type=14, cpp_type=8, label=1,
-      has_default_value=False, default_value=0,
+      name='map_function_pickled', full_name='server.WorkType.map_function_pickled', index=0,
+      number=1, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='urls', full_name='server.WorkType.urls', index=1,
-      number=2, type=9, cpp_type=9, label=3,
+      name='reduce_function_pickled', full_name='server.WorkType.reduce_function_pickled', index=1,
+      number=2, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='args', full_name='server.WorkType.args', index=2,
+      number=3, type=9, cpp_type=9, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -175,7 +157,6 @@ _WORKTYPE = _descriptor.Descriptor(
   ],
   nested_types=[],
   enum_types=[
-    _WORKTYPE_PROGRAM,
   ],
   serialized_options=None,
   is_extendable=False,
@@ -184,7 +165,7 @@ _WORKTYPE = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=125,
-  serialized_end=234,
+  serialized_end=212,
 )
 
 
@@ -215,17 +196,48 @@ _JOBID = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=236,
-  serialized_end=255,
+  serialized_start=214,
+  serialized_end=233,
 )
 
-_WORKTYPE.fields_by_name['program'].enum_type = _WORKTYPE_PROGRAM
-_WORKTYPE_PROGRAM.containing_type = _WORKTYPE
+
+_NUMBEROFWORKERS = _descriptor.Descriptor(
+  name='NumberOfWorkers',
+  full_name='server.NumberOfWorkers',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='num', full_name='server.NumberOfWorkers.num', index=0,
+      number=1, type=13, cpp_type=3, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=235,
+  serialized_end=265,
+)
+
 DESCRIPTOR.message_types_by_name['Status'] = _STATUS
 DESCRIPTOR.message_types_by_name['WorkerId'] = _WORKERID
 DESCRIPTOR.message_types_by_name['WorkerList'] = _WORKERLIST
 DESCRIPTOR.message_types_by_name['WorkType'] = _WORKTYPE
 DESCRIPTOR.message_types_by_name['JobId'] = _JOBID
+DESCRIPTOR.message_types_by_name['NumberOfWorkers'] = _NUMBEROFWORKERS
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 Status = _reflection.GeneratedProtocolMessageType('Status', (_message.Message,), {
@@ -263,6 +275,13 @@ JobId = _reflection.GeneratedProtocolMessageType('JobId', (_message.Message,), {
   })
 _sym_db.RegisterMessage(JobId)
 
+NumberOfWorkers = _reflection.GeneratedProtocolMessageType('NumberOfWorkers', (_message.Message,), {
+  'DESCRIPTOR' : _NUMBEROFWORKERS,
+  '__module__' : 'server_pb2'
+  # @@protoc_insertion_point(class_scope:server.NumberOfWorkers)
+  })
+_sym_db.RegisterMessage(NumberOfWorkers)
+
 
 
 _WORKERMANAGEMENT = _descriptor.ServiceDescriptor(
@@ -272,15 +291,15 @@ _WORKERMANAGEMENT = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=258,
-  serialized_end=470,
+  serialized_start=268,
+  serialized_end=481,
   methods=[
   _descriptor.MethodDescriptor(
     name='create',
     full_name='server.WorkerManagement.create',
     index=0,
     containing_service=None,
-    input_type=google_dot_protobuf_dot_empty__pb2._EMPTY,
+    input_type=_NUMBEROFWORKERS,
     output_type=_STATUS,
     serialized_options=None,
     create_key=_descriptor._internal_create_key,

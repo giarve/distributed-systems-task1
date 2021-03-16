@@ -2,53 +2,19 @@
 from redis import Redis
 from rq import Connection, Queue, Worker
 
-import requests
+import pickle
 
 _REDIS_QUEUE = None
 
-# Count word frequencies of a text
-def word_count_frequencies(url):
-    resp = requests.get(url)
+def worker_execute(func_pickled, arg):
+    unpickled = pickle.loads(func_pickled)
+    return unpickled(arg)
 
-    wordfreq = {}
-    for w in resp.text.split():
-        if w in wordfreq:
-            wordfreq[w] += 1
-        else:
-            wordfreq[w] = 1
+def worker_execute_reduce(func_pickled, job_list):
+    unpickled = pickle.loads(func_pickled)
+    results = list(map(lambda x: _REDIS_QUEUE.fetch_job(x).result, job_list))
+    return unpickled(results)
 
-    return wordfreq
-
-# Count the total number of words
-def count_words_from_url(url):
-    resp = requests.get(url)
-    return len(resp.text.split())
-
-def sum_partial_jobs_count_words(job_list):
-    aggregate = 0
-
-    for job_id in job_list:
-        job = _REDIS_QUEUE.fetch_job(job_id)
-        aggregate += job.result
-
-    print("sum_partial_jobs_count_words aggregate: {}".format(aggregate))
-
-    return aggregate
-
-def sum_partial_jobs_word_count_frequencies(job_list):
-    aggregate = {}
-    
-    for job_id in job_list:
-        job = _REDIS_QUEUE.fetch_job(job_id)
-        for k, v in job.result.items():
-            val = aggregate.get(k, 0)
-            val += v
-            aggregate[k] = val
-
-    print("sum_partial_jobs_word_count_frequencies aggregate: {}".format(aggregate))
-
-    return aggregate
-        
 def worker_init():
     global _REDIS_QUEUE
 

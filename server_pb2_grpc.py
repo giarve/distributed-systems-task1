@@ -18,7 +18,7 @@ class WorkerManagementStub(object):
         """
         self.create = channel.unary_unary(
                 '/server.WorkerManagement/create',
-                request_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
+                request_serializer=server__pb2.NumberOfWorkers.SerializeToString,
                 response_deserializer=server__pb2.Status.FromString,
                 )
         self.list = channel.unary_unary(
@@ -71,7 +71,7 @@ def add_WorkerManagementServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'create': grpc.unary_unary_rpc_method_handler(
                     servicer.create,
-                    request_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
+                    request_deserializer=server__pb2.NumberOfWorkers.FromString,
                     response_serializer=server__pb2.Status.SerializeToString,
             ),
             'list': grpc.unary_unary_rpc_method_handler(
@@ -112,7 +112,7 @@ class WorkerManagement(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/server.WorkerManagement/create',
-            google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
+            server__pb2.NumberOfWorkers.SerializeToString,
             server__pb2.Status.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

@@ -33,27 +33,19 @@ _BIND_ADDRESS = 'localhost:12312'
 
 _REDIS_QUEUE = None
 
-# Convert the proto type to the real function name      
-_PROGRAM_TO_WORK_FUNC = {
-    server_pb2.WorkType.Program.COUNTWORDS: wk.count_words_from_url,
-    server_pb2.WorkType.Program.WORDCOUNT: wk.word_count_frequencies
-}
-
-_PROGRAM_TO_AGGREGATE_FUNC = {
-    server_pb2.WorkType.Program.COUNTWORDS: wk.sum_partial_jobs_count_words,
-    server_pb2.WorkType.Program.WORDCOUNT: wk.sum_partial_jobs_word_count_frequencies
-}
-
 class WorkerManagement(server_pb2_grpc.WorkerManagementServicer):
 
     def create(self, request, context):  
         global _WORKER_ID
         
-        worker = multiprocessing.Process(target=wk.worker_init)
-        worker.start()
-        _WORKERS[_WORKER_ID] = worker
-        _LOGGER.info('Creating a worker %s', worker)
-        _WORKER_ID += 1
+        _LOGGER.info('Creating %d workers', request.num)
+
+        for _ in range(request.num):
+            worker = multiprocessing.Process(target=wk.worker_init)
+            worker.start()
+            _WORKERS[_WORKER_ID] = worker
+            _LOGGER.info('Creating a worker %s', worker)
+            _WORKER_ID += 1
 
         return server_pb2.Status(ok=True)
 
@@ -70,30 +62,19 @@ class WorkerManagement(server_pb2_grpc.WorkerManagementServicer):
         return server_pb2.Status(ok=True)
 
     def job(self, request, context):
-        job_function = _PROGRAM_TO_WORK_FUNC.get(request.program, None)
-        job_aggregate_function = _PROGRAM_TO_AGGREGATE_FUNC.get(request.program, None)
-
-        url_list = list(request.urls)
-        url_list_len = len(url_list)
-
-        if job_function is None:
-            return server_pb2.JobId(id="INVALID job CASE")
-        
-        if url_list_len == 0:
-            return server_pb2.JobId(id="No URLs provided")
-
+        arg_list = list(request.args)
         job_list = []
 
-        if url_list_len > 1:
-            for url in url_list:
-                job_list.append(_REDIS_QUEUE.enqueue(job_function, url))
+        if len(arg_list) > 1:
+            for arg in arg_list:
+                job_list.append(_REDIS_QUEUE.enqueue(wk.worker_execute, request.map_function_pickled, arg))
 
             job_id_list = list(map(lambda x: x.id, job_list))
-            print(job_id_list)
-            reduce_job = _REDIS_QUEUE.enqueue(job_aggregate_function, job_id_list, depends_on=job_list)
+            reduce_job = _REDIS_QUEUE.enqueue(wk.worker_execute_reduce, request.reduce_function_pickled, job_id_list, depends_on=job_list)
             return server_pb2.JobId(id=reduce_job.id)
         else:
-            job = _REDIS_QUEUE.enqueue(job_function, url_list[0])
+            arg = arg_list[0] if len(arg_list) > 0 else None
+            job = _REDIS_QUEUE.enqueue(wk.worker_execute, request.map_function_pickled, arg)
             return server_pb2.JobId(id=job.id)
 
 def _run_server():

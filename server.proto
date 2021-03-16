@@ -17,21 +17,23 @@ message WorkerList {
 }
 
 message WorkType {
-    enum Program {
-        WORDCOUNT = 0;
-        COUNTWORDS = 1;
-    }
-    Program program = 1;
-    repeated string urls = 2;
+    bytes map_function_pickled = 1;
+    bytes reduce_function_pickled = 2;
+    repeated string args = 3;
 }
+
 
 message JobId {
     string id = 1;
 }
 
+message NumberOfWorkers {
+    uint32 num = 1;
+}
+
 // Worker service
 service WorkerManagement {
-    rpc create (google.protobuf.Empty) returns (Status) {}
+    rpc create (NumberOfWorkers) returns (Status) {}
     rpc list (google.protobuf.Empty) returns (WorkerList) {}
     rpc delete (WorkerId) returns (Status) {}
     rpc job (WorkType) returns (JobId) {}
