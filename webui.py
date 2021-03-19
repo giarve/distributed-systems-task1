@@ -61,56 +61,37 @@ def allowed_file(filename):
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
-    if request.method == 'POST':
-        # check if the post request has the file part
-        if 'file' not in request.files:
-            flash('No file part')
-            return redirect(request.url)
-        file = request.files['file']
-        # if user does not select file, browser also
-        # submit an empty part without filename
-        if file.filename == '':
-            flash('No file selected')
-            return redirect(request.url)
-        if file and allowed_file(file.filename):
-            contents = file.read().decode('utf-8')
-            module = import_code(contents)
-            # sys.modules['tmp'] = module
-            
-            map_func = getattr(module, "map_func", None)
-            reduce_func = getattr(module, "reduce_func", None)
-            
-            if map_func is None:
-                flash('No map function')
+    # check if the post request has the file part
+    if 'file' not in request.files:
+        flash('No file part')
+        return redirect(request.url)
+    file = request.files['file']
 
-            print("hello")
+    # if user does not select file, browser also
+    # submit an empty part without filename
+    if file.filename == '':
+        flash('No file selected')
+        return redirect(request.url)
+    if file and allowed_file(file.filename):
+        contents = file.read().decode('utf-8')
+        module = import_code(contents)
 
-            print(request.form)
-            args = request.form['args'].split(' ')
-            print(args)
-            print(type(args))
+        map_func = getattr(module, "map_func", None)
+        reduce_func = getattr(module, "reduce_func", None)
 
-            if len(args) == 0:
-                flash("At least one argument is required")
+        if map_func is None:
+            flash('No map function')
 
-            if reduce_func is None and len(args) > 1:
-                flash('More than 1 argument, reduce function is required')
+        args = request.form['args'].split(' ')
 
-            map_function_pickled = pickle.dumps(map_func)
-            reduce_function_pickled = pickle.dumps(reduce_func)
-            app.config['sv_conn'].server_jobmgmt_stub_singleton.create(server_pb2.WorkType(map_function_pickled=map_function_pickled, reduce_function_pickled=reduce_function_pickled, args=args))
-            
-            # print(map_func)
-            
+        if len(args) == 0:
+            flash("At least one argument is required")
 
-            #file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            return redirect('/')
-    return '''
-    <!doctype html>
-    <title>Upload new File</title>
-    <h1>Upload new File</h1>
-    <form method=post enctype=multipart/form-data>
-      <input type=file name=file>
-      <input type=submit value=Upload>
-    </form>
-    '''
+        if reduce_func is None and len(args) > 1:
+            flash('More than 1 argument, reduce function is required')
+
+        map_function_pickled = pickle.dumps(map_func)
+        reduce_function_pickled = pickle.dumps(reduce_func)
+        app.config['sv_conn'].server_jobmgmt_stub_singleton.create(server_pb2.WorkType(map_function_pickled=map_function_pickled, reduce_function_pickled=reduce_function_pickled, args=args))
+
+        return redirect('/')
