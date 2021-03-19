@@ -6,41 +6,104 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Client</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+    <style type="text/css">
+    .pad {
+        padding: 10%;
+        margin-top: -8%;
+    }
+    .tab-content {
+        margin-top: 2%;
+    }
+    </style>
 </head>
 <body>
     <div class="container">
-        <main>
-            <h2>Workers</h2>
-            <table class="table table-stripped">
-                <thead>
-                  <tr>
-                    <th scope="col">Worker id</th>
-                    <th scope="col">Status</th>
-                    <th scope="col">Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                    {% for k, v in workers.items() %}
-                    <tr>
-                        <th scope="row" class="align-middle">{{ k }}</th>
-                        <td class="align-middle">{{ v }}</td>
-                        <td class="align-middle"><a href="/worker/delete/{{ k }}" role="button" class="btn btn-outline-danger">Delete</button></td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-              </table>
-            <a href="/worker/create" class="btn btn-primary btn-lg" role="button">Create worker</a>
+        <main class="pad">
+            {% with messages = get_flashed_messages() %}
+              {% if messages %}
+                <ul class=flashes>
+                {% for message in messages %}
+                  <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                  </div>
+                {% endfor %}
+                </ul>
+              {% endif %}
+            {% endwith %}
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link active" id="workers-tab" data-bs-toggle="tab" data-bs-target="#workers" type="button" role="tab" aria-controls="workers" aria-selected="true">Workers</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link" id="newjob-tab" data-bs-toggle="tab" data-bs-target="#newjob" type="button" role="tab" aria-controls="newjob" aria-selected="false">Upload job</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link" id="lastjobs-tab" data-bs-toggle="tab" data-bs-target="#lastjobs" type="button" role="tab" aria-controls="lastjobs" aria-selected="false">Recently finished jobs</button>
+                </li>
+              </ul>
+              <div class="tab-content" id="myTabContent">
+                <!-- Workers -->
+                <div class="tab-pane fade show active" id="workers" role="tabpanel" aria-labelledby="workers-tab">
+                    <table class="table table-hover">
+                        <thead>
+                          <tr>
+                            <th scope="col">Worker id</th>
+                            <th scope="col">Status</th>
+                            <th scope="col">Current job</th>
+                            <th scope="col">Action</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                            {% for w in workers %}
+                            <tr>
+                                <th scope="row" class="align-middle">{{ w.id }}</th>
+                                <td class="align-middle">{{ w.current_state }}</td>
+                                <td class="align-middle">{{ w.current_job }}</td>
+                                <td class="align-middle"><a href="/worker/delete/{{ w.id }}" role="button" class="btn btn-outline-danger">Delete</a></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                      </table>
+                      <form action="/worker/create" method="post" enctype="application/x-www-form-urlencoded">
+                        <div class="input-group mb-3">
+                          <input type="number" required name="numWorkers" class="form-control" placeholder="Number of workers" aria-label="Number of workers" aria-describedby="button-addon2">
+                          <button type="submit" class="btn btn-outline-secondary" type="button" id="button-addon2">Create workers</button>
+                        </div>
+                      </form>
+                </div>
 
+                <!-- Upload job -->
+                <div class="tab-pane fade" id="newjob" role="tabpanel" aria-labelledby="newjob-tab">
+                    <form method=post action="/upload" enctype=multipart/form-data>
+                        <input name=file class="form-control form-control-lg" id="formFileLg" type="file">
+                        <input name = args type="text" class="form-control" id="args" placeholder="Arguments">
+                        <input type=submit value=Upload>
+                    </form>
+                </div>
 
-            <div>
-                <form method=post enctype=multipart/form-data></form>
-                    <label for="formFileLg" class="form-label">Upload new job</label>
-                    <input name=file class="form-control form-control-lg" id="formFileLg" type="file">
-                    <input type="text" class="form-control" id="arg" placeholder="Arguments">
-                    <input type=submit value=Upload>
-                </form>
-            </div>
-    
+                <!-- Recently finished jobs -->
+                <div class="tab-pane fade" id="lastjobs" role="tabpanel" aria-labelledby="lastjobs-tab">
+                    <table class="table table-hover">
+                        <thead>
+                          <tr>
+                            <th scope="col">Job id</th>
+                            <th scope="col">Finished at</th>
+                            <th scope="col">Result</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {% for j in jobs %}
+                          <tr>
+                              <th scope="row" class="align-middle">{{ j.id }}</th>
+                              <td class="align-middle">{{ j.ended_at }}</td>
+                              <td class="align-middle">{{ j.result }}</td>
+                          </tr>
+                          {% endfor %}
+                        </tbody>
+                      </table>
+                </div>
+              </div>
         </main>
     </div>
     

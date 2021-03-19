@@ -1,38 +1,65 @@
 from flask import Flask, render_template, request, redirect, flash
 
+from google.protobuf import empty_pb2
+import server_pb2
+import types
+import dill as pickle
+import sys
+
+
 ALLOWED_UPLOAD_EXTENSIONS = {'py'}
 
 app = Flask(__name__)
 
-def webui_serve():
-    app.run(host='0.0.0.0', port=8080)
+def import_code(code):
+    # create blank module
+    module = types.ModuleType("tmp")
+    # populate the module with code
+    exec(code, module.__dict__)
+    return module
 
-worker_info = {
-    "0": "Running",
-    "1": "Idle",
-    "2": "Idle"
-}
+def webui_serve(server_connection):
+    app.config['sv_conn'] = server_connection
+    app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
+    app.run(host='0.0.0.0', port=8080)
 
 @app.route('/')
 def index():
-    return render_template('index.html', workers=worker_info)
+    worker_info = app.config['sv_conn'].server_workmgmt_stub_singleton.list(empty_pb2.Empty()).workers
+    worker_info.sort(key=lambda x: x.id)
+    job_info = app.config['sv_conn'].server_jobmgmt_stub_singleton.list(empty_pb2.Empty()).jobs
+    new_jobs = []
 
-@app.route('/worker/create/<int:numWorkers>', methods=['POST'])
-def createWorker(numWorkers):
-    return "hola"
-    #return createWorker(numWorkers)
+    for job in job_info:
+        new_job = {}
+        new_job['id'] = job.id
+        new_job['ended_at'] = job.ended_at.ToDatetime()
+        new_job['result'] = job.result
+        new_jobs.append(new_job)
+
+    new_jobs.sort(key=lambda x: x['ended_at'], reverse=True)
+
+    return render_template('index.html', workers=worker_info, jobs=new_jobs)
+
+@app.route('/worker/create', methods=['POST'])
+def createWorker():
+    print(request.form)
+
+    numWorkers = int(request.form['numWorkers'])
+
+    app.config['sv_conn'].server_workmgmt_stub_singleton.create(server_pb2.NumberOfWorkers(num=numWorkers)).ok
+    return redirect('/')
 
 @app.route('/worker/delete/<int:workerId>' ,methods=['GET'])
 def deleteWorker(workerId):
-    CLICK_CONTEXT.invoke(CLIENT.delete, workerid=workerId)
-    return "asd"
-    # return delete_rpc(workerId)
+    app.config['sv_conn'].server_workmgmt_stub_singleton.delete(server_pb2.WorkerId(id=workerId)).ok
+    return redirect('/')
 
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_UPLOAD_EXTENSIONS
 
-@app.route('/upload', methods=['GET', 'POST'])
+@app.route('/upload', methods=['POST'])
 def upload_file():
     if request.method == 'POST':
         # check if the post request has the file part
@@ -46,10 +73,38 @@ def upload_file():
             flash('No file selected')
             return redirect(request.url)
         if file and allowed_file(file.filename):
-            print(file)
+            contents = file.read().decode('utf-8')
+            module = import_code(contents)
+            # sys.modules['tmp'] = module
+            
+            map_func = getattr(module, "map_func", None)
+            reduce_func = getattr(module, "reduce_func", None)
+            
+            if map_func is None:
+                flash('No map function')
+
+            print("hello")
+
+            print(request.form)
+            args = request.form['args'].split(' ')
+            print(args)
+            print(type(args))
+
+            if len(args) == 0:
+                flash("At least one argument is required")
+
+            if reduce_func is None and len(args) > 1:
+                flash('More than 1 argument, reduce function is required')
+
+            map_function_pickled = pickle.dumps(map_func)
+            reduce_function_pickled = pickle.dumps(reduce_func)
+            app.config['sv_conn'].server_jobmgmt_stub_singleton.create(server_pb2.WorkType(map_function_pickled=map_function_pickled, reduce_function_pickled=reduce_function_pickled, args=args))
+            
+            # print(map_func)
+            
 
             #file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            return redirect('/index')
+            return redirect('/')
     return '''
     <!doctype html>
     <title>Upload new File</title>

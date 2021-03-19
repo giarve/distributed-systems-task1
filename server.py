@@ -21,7 +21,7 @@ from google.protobuf import timestamp_pb2
 import worker as wk
 
 from redis import Redis
-from rq import Queue
+from rq import Queue, Worker
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -42,7 +42,7 @@ class WorkerManagement(server_pb2_grpc.WorkerManagementServicer):
         _LOGGER.info('Creating %d workers', request.num)
 
         for _ in range(request.num):
-            worker = multiprocessing.Process(target=wk.worker_init)
+            worker = multiprocessing.Process(target=wk.worker_init, args=(_WORKER_ID,))
             worker.start()
             _WORKERS[_WORKER_ID] = worker
             _LOGGER.info('Creating a worker %s', worker)
@@ -51,7 +51,13 @@ class WorkerManagement(server_pb2_grpc.WorkerManagementServicer):
         return server_pb2.Status(ok=True)
 
     def list(self, request, context):
-        return server_pb2.WorkerList(id=_WORKERS.keys())
+        workers = Worker.all(queue=_REDIS_QUEUE)
+        result = []
+        for worker in workers:
+            w = server_pb2.WorkerInfo(id=int(worker.name), current_state=worker.state, current_job=worker.get_current_job_id())
+            result.append(w)
+
+        return server_pb2.WorkerList(workers=result)
 
     def delete(self, request, context):
         worker = _WORKERS.pop(request.id, None)
