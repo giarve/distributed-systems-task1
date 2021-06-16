@@ -4,7 +4,7 @@ from google.protobuf import empty_pb2
 import server_pb2
 import types
 import dill as pickle
-import sys
+from datetime import datetime
 
 
 ALLOWED_UPLOAD_EXTENSIONS = {'py'}
@@ -33,7 +33,7 @@ def index():
     for job in job_info:
         new_job = {}
         new_job['id'] = job.id
-        new_job['ended_at'] = job.ended_at.ToDatetime()
+        new_job['ended_at'] = datetime.fromtimestamp(job.ended_at.ToSeconds())
         new_job['result'] = job.result
         new_jobs.append(new_job)
 
@@ -47,12 +47,12 @@ def createWorker():
 
     numWorkers = int(request.form['numWorkers'])
 
-    app.config['sv_conn'].server_workmgmt_stub_singleton.create(server_pb2.NumberOfWorkers(num=numWorkers)).ok
+    app.config['sv_conn'].server_workmgmt_stub_singleton.create(server_pb2.NumberOfWorkers(num=numWorkers))
     return redirect('/')
 
-@app.route('/worker/delete/<int:workerId>' ,methods=['GET'])
+@app.route('/worker/delete/<int:workerId>', methods=['GET'])
 def deleteWorker(workerId):
-    app.config['sv_conn'].server_workmgmt_stub_singleton.delete(server_pb2.WorkerId(id=workerId)).ok
+    app.config['sv_conn'].server_workmgmt_stub_singleton.delete(server_pb2.WorkerId(id=workerId))
     return redirect('/')
 
 def allowed_file(filename):
@@ -82,10 +82,10 @@ def upload_file():
         if map_func is None:
             flash('No map function')
 
-        args = request.form['args'].split(' ')
-
-        if len(args) == 0:
+        if not request.form['args']:
             flash("At least one argument is required")
+
+        args = request.form['args'].split(' ')
 
         if reduce_func is None and len(args) > 1:
             flash('More than 1 argument, reduce function is required')

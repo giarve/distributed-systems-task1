@@ -4,4 +4,3 @@ grpcio==1.36.1
 grpcio-tools==1.36.1
 redis==3.5.3
 requests==2.25.1
-rq @ git+https://github.com/rq/rq.git@dcbbd067f0e94637f475839eca0ae805d0b2a323

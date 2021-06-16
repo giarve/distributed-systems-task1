@@ -4,13 +4,11 @@
 """Task 1: High Performance Computing Cluster"""
 
 from concurrent import futures
-import contextlib
-import datetime
 import logging
-import math
 import multiprocessing
-import time
+import dill as pickle
 import sys
+from uuid import uuid4
 
 import grpc
 
@@ -21,7 +19,6 @@ from google.protobuf import timestamp_pb2
 import worker as wk
 
 from redis import Redis
-from rq import Queue, Worker
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -32,7 +29,7 @@ _WORKERS = {}
 
 _BIND_ADDRESS = 'localhost:12312'
 
-_REDIS_QUEUE = None
+_REDIS_CONN = None
 
 class WorkerManagement(server_pb2_grpc.WorkerManagementServicer):
 
@@ -51,10 +48,16 @@ class WorkerManagement(server_pb2_grpc.WorkerManagementServicer):
         return server_pb2.Status(ok=True)
 
     def list(self, request, context):
-        workers = Worker.all(queue=_REDIS_QUEUE)
         result = []
-        for worker in workers:
-            w = server_pb2.WorkerInfo(id=int(worker.name), current_state=worker.state, current_job=worker.get_current_job_id())
+        keys = _REDIS_CONN.keys("workers:*")
+        for k in keys:
+            k = k.decode()
+            state = _REDIS_CONN.hget(k, 'state').decode()
+            current_job = None
+            if state == 'busy':
+                current_job = _REDIS_CONN.hget(k, 'current_job').decode()
+
+            w = server_pb2.WorkerInfo(id=int(k.partition(':')[2]), current_state=state, current_job=current_job)
             result.append(w)
 
         return server_pb2.WorkerList(workers=result)
@@ -65,34 +68,72 @@ class WorkerManagement(server_pb2_grpc.WorkerManagementServicer):
             return server_pb2.Status(ok=False)
 
         _LOGGER.info('Terminating the worker %s', request.id)
+        # Send SIGTERM to the worker
+        # it will exit immediately if it's idle or
+        # after it finishes executing the current job
         worker.terminate()
         return server_pb2.Status(ok=True)
-        
+
 
 class JobManagement(server_pb2_grpc.JobManagementServicer):
     def create(self, request, context):
         arg_list = list(request.args)
+
         job_list = []
 
         if len(arg_list) > 1:
-            for arg in arg_list:
-                job_list.append(_REDIS_QUEUE.enqueue(wk.worker_execute, request.map_function_pickled, arg))
+            job_id_reduce = uuid4().hex
+            reduce_key = 'jobs:{}'.format(job_id_reduce)
 
-            job_id_list = list(map(lambda x: x.id, job_list))
-            reduce_job = _REDIS_QUEUE.enqueue(wk.worker_execute_reduce, request.reduce_function_pickled, job_id_list, depends_on=job_list)
-            return server_pb2.JobId(id=reduce_job.id)
+            _REDIS_CONN.hset(reduce_key, 'status', 'deferred')
+            _REDIS_CONN.hset(reduce_key, 'type', 'reduce')
+            _REDIS_CONN.hset(reduce_key, 'func', request.reduce_function_pickled)
+
+            for arg in arg_list:
+                job_id = uuid4().hex
+                job_list.append(job_id)
+                job_key = 'jobs:{}'.format(job_id)
+                _REDIS_CONN.hset(job_key, 'arg', arg)
+                _REDIS_CONN.hset(job_key, 'dependent', job_id_reduce)
+                _REDIS_CONN.hset(job_key, 'status', 'queued')
+                _REDIS_CONN.hset(job_key, 'type', 'map')
+                _REDIS_CONN.hset(job_key, 'func', request.map_function_pickled)
+                # deps -> jobs still pending to execute before the reduce job can be queued
+                # dependencies -> kept so the reduce job can retrieve the results from the map functions
+                _REDIS_CONN.sadd('{}:deps'.format(reduce_key), job_id)
+                _REDIS_CONN.sadd('{}:dependencies'.format(reduce_key), job_id)
+                _REDIS_CONN.rpush('job_q', job_id)
+
+            return server_pb2.JobId(id=job_id_reduce)
         else:
-            arg = arg_list[0] if len(arg_list) > 0 else None
-            job = _REDIS_QUEUE.enqueue(wk.worker_execute, request.map_function_pickled, arg)
-            return server_pb2.JobId(id=job.id)
-    
+            arg = arg_list[0] if len(arg_list) > 0 else ''
+            job_id = uuid4().hex
+            job_key = 'jobs:{}'.format(job_id)
+            _REDIS_CONN.hset(job_key, 'arg', arg)
+            _REDIS_CONN.hset(job_key, 'status', 'queued')
+            _REDIS_CONN.hset(job_key, 'type', 'map')
+            _REDIS_CONN.hset(job_key, 'func', request.map_function_pickled)
+            _REDIS_CONN.rpush('job_q', job_id)
+
+            return server_pb2.JobId(id=job_id)
+
     def list(self, request, context):
         jobs = []
-        for job_id in _REDIS_QUEUE.finished_job_registry.get_job_ids():
-            job = _REDIS_QUEUE.fetch_job(job_id)
+        keys = _REDIS_CONN.keys('jobs:' + '?' * 32)
+        for k in keys:
+            k = k.decode()
+            status = _REDIS_CONN.hget(k, 'status').decode()
+            result = None
+            if status == 'finished':
+                result = str(pickle.loads(_REDIS_CONN.hget(k, 'result')))
+            elif status == 'failed':
+                result = 'failed'
+            else:
+                continue
+
             t = timestamp_pb2.Timestamp()
-            t.FromDatetime(job.ended_at)
-            jobs.append(server_pb2.JobDetails(id=job_id, result=str(job.result), ended_at=t))
+            t.FromSeconds(int(_REDIS_CONN.hget(k, 'ended_at')))
+            jobs.append(server_pb2.JobDetails(id=k.partition(':')[2], result=result, ended_at=t))
 
         return server_pb2.JobList(jobs=jobs)
 
@@ -108,15 +149,18 @@ def _run_server():
     server.wait_for_termination()
 
 def _init_redis_connection():
-    global _REDIS_QUEUE
+    global _REDIS_CONN
 
-    _REDIS_QUEUE = Queue(connection=Redis())
+    _REDIS_CONN = Redis()
 
 def main():
     _LOGGER.info("Binding to '%s'", _BIND_ADDRESS)
     sys.stdout.flush()
     _init_redis_connection()
-    _run_server()
+    try:
+        _run_server()
+    except KeyboardInterrupt:
+        pass
 
 
 if __name__ == '__main__':
